@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GMMIGUH — Оплата</title>
+    <style>
+        /* ===== ОБЩИЕ СТИЛИ ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f0f1a;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        /* ===== КАРТОЧКА ===== */
+        .card {
+            background: #1a1a2e;
+            border-radius: 24px;
+            padding: 28px 24px 24px;
+            max-width: 400px;
+            width: 100%;
+            border: 1px solid #2a2a4a;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+        }
+
+        /* ===== ЗАГОЛОВОК ===== */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #e94560, #f5a623);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header p {
+            color: #888;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* ===== ЦЕНА ===== */
+        .price {
+            text-align: center;
+            font-size: 48px;
+            font-weight: 700;
+            color: #f5c842;
+            margin: 16px 0 8px;
+        }
+        .price span {
+            font-size: 18px;
+            color: #888;
+            font-weight: 400;
+        }
+
+        /* ===== ИНФО БЛОК ===== */
+        .info {
+            background: #12122a;
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin: 16px 0;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        .info strong {
+            color: #e94560;
+        }
+        .info .label {
+            color: #888;
+        }
+
+        /* ===== ПОЛЕ ДЛЯ ПОЖЕЛАНИЙ ===== */
+        .wish-input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid #2a2a4a;
+            background: #12122a;
+            color: #fff;
+            font-size: 15px;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+            transition: border 0.2s;
+            margin: 12px 0 8px;
+        }
+        .wish-input:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+        .wish-input::placeholder {
+            color: #555;
+        }
+
+        /* ===== КНОПКА ОПЛАТЫ ===== */
+        .pay-btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #e94560, #c73652);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.25s;
+            margin-top: 8px;
+        }
+        .pay-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 24px rgba(233, 69, 96, 0.35);
+        }
+        .pay-btn:disabled {
+            background: #444;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* ===== СТАТУС ===== */
+        .status {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 14px;
+            min-height: 24px;
+            color: #4ecdc4;
+        }
+        .status.error {
+            color: #e94560;
+        }
+
+        /* ===== НОМЕР ЗАКАЗА ===== */
+        .order-id {
+            text-align: center;
+            font-size: 12px;
+            color: #555;
+            margin-top: 14px;
+            border-top: 1px solid #1f1f3a;
+            padding-top: 14px;
+        }
+
+        /* ===== КНОПКА ЗАКРЫТЬ ===== */
+        .close-btn {
+            display: block;
+            text-align: center;
+            margin-top: 12px;
+            color: #666;
+            font-size: 13px;
+            text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+        .close-btn:hover {
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card" id="app">
+    <!-- ЗАГОЛОВОК -->
+    <div class="header">
+        <h1>🛒 GMMIGUH</h1>
+        <p>Оплата заказа</p>
+    </div>
+
+    <!-- ЦЕНА -->
+    <div class="price">
+        ★20 <span>звёзд</span>
+    </div>
+
+    <!-- ИНФОРМАЦИЯ О ЗАКАЗЕ -->
+    <div class="info" id="orderInfo">
+        <div><span class="label">Заказ:</span> <strong id="orderId">#---</strong></div>
+        <div><span class="label">Услуга:</span> Заказ работы</div>
+        <div><span class="label">Статус:</span> <span id="statusText">Ожидает оплаты</span></div>
+    </div>
+
+    <!-- ПОЛЕ ДЛЯ ПОЖЕЛАНИЙ -->
+    <textarea class="wish-input" id="wishInput" placeholder="📝 Напишите пожелания к заказу..." rows="3"></textarea>
+
+    <!-- КНОПКА ОПЛАТЫ -->
+    <button class="pay-btn" id="payBtn" onclick="pay()">
+        💳 Оплатить ★20
+    </button>
+
+    <!-- СТАТУС -->
+    <div class="status" id="statusMsg"></div>
+
+    <!-- НОМЕР ЗАКАЗА (внизу) -->
+    <div class="order-id" id="orderIdDisplay"></div>
+
+    <!-- КНОПКА ЗАКРЫТЬ -->
+    <button class="close-btn" onclick="closeApp()">✕ Закрыть</button>
+</div>
+
+<!-- ===== ПОДКЛЮЧАЕМ TELEGRAM WEB APP SDK ===== -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<script>
+    // ============================================================
+    // 1. ИНИЦИАЛИЗАЦИЯ
+    // ============================================================
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+
+    // Получаем данные из Telegram
+    const initData = tg.initDataUnsafe || {};
+    const userId = initData.user?.id || 'неизвестно';
+
+    // Получаем номер заказа из URL (?order=123)
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('order') || '---';
+
+    // Отображаем номер заказа
+    document.getElementById('orderId').textContent = '#' + orderId;
+    document.getElementById('orderIdDisplay').textContent = 'Заказ #' + orderId;
+
+    // ============================================================
+    // 2. ВОССТАНОВЛЕНИЕ ПОЖЕЛАНИЙ (сохраняются в localStorage)
+    // ============================================================
+    const wishKey = 'wish_' + orderId;
+    const savedWish = localStorage.getItem(wishKey);
+    if (savedWish) {
+        document.getElementById('wishInput').value = savedWish;
+    }
+
+    // Автосохранение пожеланий
+    document.getElementById('wishInput').addEventListener('input', function() {
+        localStorage.setItem(wishKey, this.value);
+    });
+
+    // ============================================================
+    // 3. ФУНКЦИЯ ОПЛАТЫ
+    // ============================================================
+    function pay() {
+        const wish = document.getElementById('wishInput').value.trim();
+        const statusMsg = document.getElementById('statusMsg');
+        const payBtn = document.getElementById('payBtn');
+
+        // Проверяем, заполнены ли пожелания
+        if (!wish) {
+            statusMsg.textContent = '❌ Напишите пожелания к заказу!';
+            statusMsg.className = 'status error';
+            return;
+        }
+
+        // Блокируем кнопку
+        payBtn.disabled = true;
+        payBtn.textContent = '⏳ Обработка...';
+        statusMsg.textContent = '';
+        statusMsg.className = 'status';
+
+        // Отправляем данные в Telegram Web App
+        tg.sendData(JSON.stringify({
+            action: 'pay',
+            orderId: orderId,
+            userId: userId,
+            wish: wish
+        }));
+
+        // Имитация ожидания ответа от бота (через 3 секунды)
+        // В реальности бот пришлёт ответ через webhook, но для удобства показываем успех
+        setTimeout(() => {
+            statusMsg.textContent = '✅ Оплата прошла успешно! Спасибо!';
+            statusMsg.className = 'status';
+            payBtn.textContent = '✅ Оплачено';
+            document.getElementById('statusText').textContent = 'Оплачено';
+            tg.close();
+        }, 3000);
+    }
+
+    // ============================================================
+    // 4. ЗАКРЫТИЕ WEB APP
+    // ============================================================
+    function closeApp() {
+        tg.close();
+    }
+
+    // ============================================================
+    // 5. ОБРАБОТКА ОШИБОК
+    // ============================================================
+    tg.onEvent('error', function(error) {
+        const statusMsg = document.getElementById('statusMsg');
+        statusMsg.textContent = '❌ Ошибка: ' + (error || 'неизвестная ошибка');
+        statusMsg.className = 'status error';
+        document.getElementById('payBtn').disabled = false;
+        document.getElementById('payBtn').textContent = '💳 Оплатить ★20';
+    });
+</script>
+</body>
+</html>
